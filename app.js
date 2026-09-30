@@ -10,6 +10,9 @@ let todos = [
   { id: 2, task: 'Build CRUD API', completed: false },
 ];
 
+// Counter for unique IDs (never reused, even after deletes)
+let nextId = 3;
+
 // GET Home – friendly message
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Todo API is running. Try GET /todos' });
@@ -48,7 +51,7 @@ app.post('/todos', (req, res) => {
   }
 
   const newTodo = {
-    id: todos.length + 1,
+    id: nextId++,
     task: task.trim(),
     completed: false,
   };
@@ -60,7 +63,11 @@ app.post('/todos', (req, res) => {
 app.patch('/todos/:id', (req, res) => {
   const todo = todos.find((t) => t.id === parseInt(req.params.id)); // Array.find()
   if (!todo) return res.status(404).json({ message: 'Todo not found' });
-  Object.assign(todo, req.body); // Merge: e.g., {completed: true}
+
+  // Merge the body into the todo, but never allow the id to be overwritten
+  const { id, ...updates } = req.body;
+  Object.assign(todo, updates); // Merge: e.g., {completed: true}
+
   res.status(200).json(todo);
 });
 
