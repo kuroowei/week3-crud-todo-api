@@ -1,11 +1,19 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
+
 app.use(express.json()); // Parse JSON bodies
+app.use(cors()); // Allow requests from any origin (frontend)
 
 let todos = [
   { id: 1, task: 'Learn Node.js', completed: false },
   { id: 2, task: 'Build CRUD API', completed: false },
 ];
+
+// GET Home – friendly message
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Todo API is running. Try GET /todos' });
+});
 
 // GET All – Read
 app.get('/todos', (req, res) => {
